@@ -55,8 +55,7 @@ def take_turn(num_rolls, opponent_score, dice=six_sided):
     assert type(num_rolls) == int, 'num_rolls must be an integer.'
     assert num_rolls >= 0, 'Cannot roll a negative number of dice in take_turn.'
     assert num_rolls <= 10, 'Cannot roll more than 10 dice.'
-    assert opponent_score < 100, 'The game should be over.'
-    
+    assert opponent_score < 100, 'The game should be over.'  
     if num_rolls == 0:
         return free_bacon(opponent_score)
     else:
@@ -114,36 +113,37 @@ def play(strategy0, strategy1, score0=0, score1=0, dice=six_sided,
     say:        The commentary function to call at the end of the first turn.
     feral_hogs: A boolean indicating whether the feral hogs rule should be active.
     """
-    player = 0  # Which player is about to take a turn, 0 (first) or 1 (second)
-    # BEGIN PROBLEM 5
+    player       = 0  # Which player is about to take a turn, 0 (first) or 1 (second)
+    num_rolls    = 0  # Number of dice to be rolled
+    points       = 0  # Points earned on each turn
+    prev_rolls_0 = 0  # Number of dice rolled on previous turn by player 0
+    prev_rolls_1 = 0  # Number of dice rolled on previous turn by player 1
     while score0 < goal and score1 < goal:
     	if player == 0:
-    		num_rolls = strategy0(score0, score1)
-    		points = take_turn(num_rolls, score1, dice)
-    		score0 += points	
-    		if is_swap(score0, score1):
-    			temp   = score0
-    			score0 = score1
-    			score1 = temp
-    		player = other(player)
-    	elif player == 1:    		
-    		num_rolls = strategy1(score1, score0)
-    		points = take_turn(num_rolls, score0, dice)
-    		score1 += points
-    		if is_swap(score1, score0):
-    			temp   = score0
-    			score0 = score1
-    			score1 = temp
-    		player = other(player)
-    	
-
-    # END PROBLEM 5
-    # (note that the indentation for the problem 6 prompt (***YOUR CODE HERE***) might be misleading)
-    # BEGIN PROBLEM 6
-    "*** YOUR CODE HERE ***"
-    # END PROBLEM 6
+            num_rolls = strategy0(score0, score1) 
+            points = take_turn(num_rolls, score1, dice)
+            score0 += points
+            if feral_hogs and abs(num_rolls - prev_rolls_0) == 2:
+                score0 += 3
+            if is_swap(score0, score1):
+                temp   = score0
+                score0 = score1
+                score1 = temp
+            prev_rolls_0 = num_rolls
+            player = other(player)
+    	elif player == 1:
+            num_rolls = strategy1(score1, score0)
+            points = take_turn(num_rolls, score0, dice)
+            score1 += points
+            if feral_hogs and abs(num_rolls - prev_rolls_1) == 2:
+                score1 += 3
+            if is_swap(score1, score0):
+                temp   = score0
+                score0 = score1
+                score1 = temp
+            prev_rolls_1 = num_rolls
+            player = other(player)
     return score0, score1
-
 
 #######################
 # Phase 2: Commentary #
