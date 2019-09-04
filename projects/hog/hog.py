@@ -68,15 +68,17 @@ def is_swap(player_score, opponent_score):
     """
     player_right_digit = player_score % 10
     player_left_digit  = player_score
-    while player_left_digit > 10:
+    while player_left_digit > 9:
             player_left_digit //= 10
 
     opponent_right_digit = opponent_score % 10
     opponent_left_digit  = opponent_score
-    while opponent_left_digit > 10:
+    while opponent_left_digit > 9:
         opponent_left_digit //= 10
-    
-    return (player_right_digit * player_left_digit) == (opponent_right_digit * opponent_left_digit)
+
+    sum_player_digits   = player_right_digit   * player_left_digit
+    sum_opponent_digits = opponent_right_digit * opponent_left_digit
+    return sum_player_digits == sum_opponent_digits
 
 def other(player):
     """Return the other player, for a player PLAYER numbered 0 or 1.
@@ -114,7 +116,26 @@ def play(strategy0, strategy1, score0=0, score1=0, dice=six_sided,
     """
     player = 0  # Which player is about to take a turn, 0 (first) or 1 (second)
     # BEGIN PROBLEM 5
-    
+    while score0 < goal and score1 < goal:
+    	if player == 0:
+    		num_rolls = strategy0(score0, score1)
+    		points = take_turn(num_rolls, score1, dice)
+    		score0 += points	
+    		if is_swap(score0, score1):
+    			temp   = score0
+    			score0 = score1
+    			score1 = temp
+    		player = other(player)
+    	elif player == 1:    		
+    		num_rolls = strategy1(score1, score0)
+    		points = take_turn(num_rolls, score0, dice)
+    		score1 += points
+    		if is_swap(score1, score0):
+    			temp   = score0
+    			score0 = score1
+    			score1 = temp
+    		player = other(player)
+    	
 
     # END PROBLEM 5
     # (note that the indentation for the problem 6 prompt (***YOUR CODE HERE***) might be misleading)
