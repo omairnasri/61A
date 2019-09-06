@@ -118,8 +118,9 @@ def play(strategy0, strategy1, score0=0, score1=0, dice=six_sided,
     points       = 0  # Points earned on each turn
     prev_rolls_0 = 0  # Number of dice rolled on previous turn by player 0
     prev_rolls_1 = 0  # Number of dice rolled on previous turn by player 1
+
     while score0 < goal and score1 < goal:
-    	if player == 0:
+        if player == 0:
             num_rolls = strategy0(score0, score1) 
             points = take_turn(num_rolls, score1, dice)
             score0 += points
@@ -131,18 +132,20 @@ def play(strategy0, strategy1, score0=0, score1=0, dice=six_sided,
                 score1 = temp
             prev_rolls_0 = num_rolls
             player = other(player)
-    	elif player == 1:
+        elif player == 1:
             num_rolls = strategy1(score1, score0)
             points = take_turn(num_rolls, score0, dice)
             score1 += points
             if feral_hogs and abs(num_rolls - prev_rolls_1) == 2:
                 score1 += 3
-            if is_swap(score1, score0):
-                temp   = score0
-                score0 = score1
-                score1 = temp
+                if is_swap(score1, score0):
+                    temp   = score0
+                    score0 = score1
+                    score1 = temp
             prev_rolls_1 = num_rolls
             player = other(player)
+        say = say(score0, score1)
+
     return score0, score1
 
 #######################
@@ -224,11 +227,24 @@ def announce_highest(who, previous_high=0, previous_score=0):
     >>> f10 = f9(33, 77) # Swap!
     55 point(s)! That's the biggest gain yet for Player 1
     """
-    assert who == 0 or who == 1, 'The who argument should indicate a player.'
-    # BEGIN PROBLEM 7
-    "*** YOUR CODE HERE ***"
-    # END PROBLEM 7
-
+    assert who == 0 or who == 1, 'The who argument should indicate a player.'   
+    def say(score0, score1):
+        # Hold gain between current and previous score
+        if who:
+            gain = score1 - previous_score 
+            if gain > previous_high:
+                print(gain, 'point(s)! That\'s the biggest gain yet for Player', who)
+                return announce_highest(who, gain, score1)
+            else:
+                return announce_highest(who, previous_high, score1)
+        else: # player 0
+            gain = score0 - previous_score 
+            if gain > previous_high:
+                print(gain, 'point(s)! That\'s the biggest gain yet for Player', who)
+                return announce_highest(who, gain, score0)
+            else:
+                return announce_highest(who, previous_high, score0)
+    return say
 
 #######################
 # Phase 3: Strategies #
