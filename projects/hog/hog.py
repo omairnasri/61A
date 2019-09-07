@@ -280,10 +280,13 @@ def make_averaged(fn, num_samples=1000):
     >>> averaged_dice()
     3.0
     """
-    # BEGIN PROBLEM 8
-    "*** YOUR CODE HERE ***"
-    # END PROBLEM 8
 
+    def avg(*args):
+        total = 0
+        for i in range(num_samples):
+            total += fn(*args)
+        return total / num_samples
+    return avg
 
 def max_scoring_num_rolls(dice=six_sided, num_samples=1000):
     """Return the number of dice (1 to 10) that gives the highest average turn
