@@ -40,7 +40,7 @@ def free_bacon(score):
     """
     assert score < 100, 'The game should be over.'
     right_digit = score % 10
-    left_digit  = score / 10
+    left_digit  = score // 10
     return 10 - min(right_digit, left_digit) 
 
 def take_turn(num_rolls, opponent_score, dice=six_sided):
@@ -65,6 +65,8 @@ def is_swap(player_score, opponent_score):
     """
     Return whether the two scores should be swapped
     """
+    if player_score == opponent_score:
+        return False
     player_right_digit = player_score % 10
     player_left_digit  = player_score
     while player_left_digit > 9:
@@ -357,9 +359,8 @@ def bacon_strategy(score, opponent_score, margin=8, num_rolls=4):
     """This strategy rolls 0 dice if that gives at least MARGIN points, and
     rolls NUM_ROLLS otherwise.
     """
-    # BEGIN PROBLEM 10
-    return 4  # Replace this statement
-    # END PROBLEM 10
+    roll_0_outcome = free_bacon(opponent_score)
+    return 0 if roll_0_outcome >= margin else num_rolls
 
 
 def swap_strategy(score, opponent_score, margin=8, num_rolls=4):
@@ -367,9 +368,18 @@ def swap_strategy(score, opponent_score, margin=8, num_rolls=4):
     rolls 0 dice if it gives at least MARGIN points and does not trigger a
     non-beneficial swap. Otherwise, it rolls NUM_ROLLS.
     """
-    # BEGIN PROBLEM 11
-    return 4  # Replace this statement
-    # END PROBLEM 11
+    # Roll 0 - store updated score
+    zero_dice_score = score + free_bacon(opponent_score)
+
+    if is_swap(zero_dice_score, opponent_score):          # A swap is possible
+        if opponent_score >= zero_dice_score:    # beneficial swap
+            return 0 
+        else:                                   # detrimental swap
+            return num_rolls
+    elif free_bacon(opponent_score) >= margin:  # Swap isn't possible
+        return 0
+    else:
+        return num_rolls
 
 
 def final_strategy(score, opponent_score):
