@@ -40,7 +40,7 @@ def free_bacon(score):
     """
     assert score < 100, 'The game should be over.'
     right_digit = score % 10
-    left_digit  = score // 10
+    left_digit  = score / 10
     return 10 - min(right_digit, left_digit) 
 
 def take_turn(num_rolls, opponent_score, dice=six_sided):
@@ -280,7 +280,6 @@ def make_averaged(fn, num_samples=1000):
     >>> averaged_dice()
     3.0
     """
-
     def avg(*args):
         total = 0
         for i in range(num_samples):
@@ -297,9 +296,21 @@ def max_scoring_num_rolls(dice=six_sided, num_samples=1000):
     >>> max_scoring_num_rolls(dice)
     1
     """
-    # BEGIN PROBLEM 9
-    "*** YOUR CODE HERE ***"
-    # END PROBLEM 9
+    # Call make_averaged() with 1 - 10 rolls running 1000 shots each time. 
+    # Calculate to see which roll has the highest average returned by make_averaged(). 
+
+    inner_func = make_averaged(roll_dice, num_samples)
+
+    # Hold the average outcome for 1 - 10 dice rolls
+    avg_res = []
+
+    i = 1
+    while i <= 10:
+        avg_result = inner_func(i, dice)
+        avg_res.append(avg_result)
+        i += 1
+    # Add 1 to convert index to roll 
+    return avg_res.index(max(avg_res)) + 1
 
 
 def winner(strategy0, strategy1):
