@@ -129,9 +129,7 @@ def play(strategy0, strategy1, score0=0, score1=0, dice=six_sided,
             if feral_hogs and abs(num_rolls - prev_rolls_0) == 2:
                 score0 += 3
             if is_swap(score0, score1):
-                temp   = score0
-                score0 = score1
-                score1 = temp
+                score0, score1 = score1, score0
             prev_rolls_0 = num_rolls
             player = other(player)
         elif player == 1:
@@ -140,10 +138,8 @@ def play(strategy0, strategy1, score0=0, score1=0, dice=six_sided,
             score1 += points
             if feral_hogs and abs(num_rolls - prev_rolls_1) == 2:
                 score1 += 3
-                if is_swap(score1, score0):
-                    temp   = score0
-                    score0 = score1
-                    score1 = temp
+            if is_swap(score1, score0):
+                score1, score0 = score0, score1
             prev_rolls_1 = num_rolls
             player = other(player)
         say = say(score0, score1)
