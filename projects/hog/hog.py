@@ -71,12 +71,10 @@ def is_swap(player_score, opponent_score):
     player_left_digit  = player_score
     while player_left_digit > 9:
             player_left_digit //= 10
-
     opponent_right_digit = opponent_score % 10
     opponent_left_digit  = opponent_score
     while opponent_left_digit > 9:
         opponent_left_digit //= 10
-
     sum_player_digits   = player_right_digit   * player_left_digit
     sum_opponent_digits = opponent_right_digit * opponent_left_digit
     return sum_player_digits == sum_opponent_digits
@@ -120,7 +118,6 @@ def play(strategy0, strategy1, score0=0, score1=0, dice=six_sided,
     points       = 0  # Points earned on each turn
     prev_rolls_0 = 0  # Number of dice rolled on previous turn by player 0
     prev_rolls_1 = 0  # Number of dice rolled on previous turn by player 1
-
     while score0 < goal and score1 < goal:
         if player == 0:
             num_rolls = strategy0(score0, score1) 
@@ -143,7 +140,6 @@ def play(strategy0, strategy1, score0=0, score1=0, dice=six_sided,
             prev_rolls_1 = num_rolls
             player = other(player)
         say = say(score0, score1)
-
     return score0, score1
 
 #######################
@@ -227,7 +223,6 @@ def announce_highest(who, previous_high=0, previous_score=0):
     """
     assert who == 0 or who == 1, 'The who argument should indicate a player.'   
     def say(score0, score1):
-        # Hold gain between current and previous score
         if who:
             gain = score1 - previous_score 
             if gain > previous_high:
@@ -235,7 +230,7 @@ def announce_highest(who, previous_high=0, previous_score=0):
                 return announce_highest(who, gain, score1)
             else:
                 return announce_highest(who, previous_high, score1)
-        else: # player 0
+        else: 
             gain = score0 - previous_score 
             if gain > previous_high:
                 print(gain, 'point(s)! That\'s the biggest gain yet for Player', who)
@@ -280,8 +275,10 @@ def make_averaged(fn, num_samples=1000):
     """
     def avg(*args):
         total = 0
-        for i in range(num_samples):
+        i = 0
+        while i < num_samples:
             total += fn(*args)
+            i += 1
         return total / num_samples
     return avg
 
@@ -298,18 +295,13 @@ def max_scoring_num_rolls(dice=six_sided, num_samples=1000):
     # Calculate to see which roll has the highest average returned by make_averaged(). 
 
     inner_func = make_averaged(roll_dice, num_samples)
-
-    # Hold the average outcome for 1 - 10 dice rolls
-    avg_res = []
-
+    avg_res = []        # Hold the average outcome for 1 - 10 dice rolls
     i = 1
     while i <= 10:
         avg_result = inner_func(i, dice)
         avg_res.append(avg_result)
         i += 1
-    # Add 1 to convert index to roll 
     return avg_res.index(max(avg_res)) + 1
-
 
 def winner(strategy0, strategy1):
     """Return 0 if strategy0 wins against strategy1, and 1 otherwise."""
@@ -319,14 +311,12 @@ def winner(strategy0, strategy1):
     else:
         return 1
 
-
 def average_win_rate(strategy, baseline=always_roll(4)):
     """Return the average win rate of STRATEGY against BASELINE. Averages the
     winrate when starting the game as player 0 and as player 1.
     """
     win_rate_as_player_0 = 1 - make_averaged(winner)(strategy, baseline)
     win_rate_as_player_1 = make_averaged(winner)(baseline, strategy)
-
     return (win_rate_as_player_0 + win_rate_as_player_1) / 2
 
 
@@ -366,13 +356,12 @@ def swap_strategy(score, opponent_score, margin=8, num_rolls=4):
     """
     # Roll 0 - store updated score
     zero_dice_score = score + free_bacon(opponent_score)
-
-    if is_swap(zero_dice_score, opponent_score):          # A swap is possible
-        if opponent_score >= zero_dice_score:    # beneficial swap
+    if is_swap(zero_dice_score, opponent_score):          
+        if opponent_score >= zero_dice_score:    
             return 0 
-        else:                                   # detrimental swap
+        else:                                   
             return num_rolls
-    elif free_bacon(opponent_score) >= margin:  # Swap isn't possible
+    elif free_bacon(opponent_score) >= margin:  
         return 0
     else:
         return num_rolls
